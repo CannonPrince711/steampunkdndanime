@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "season": 1,
+  "title": "The Calibration Season",
+  "theme": "Cog proves the machine is the argument. The Assay proves the argument has a price.",
+  "arc_shape": "escalating license war inside one city, ending with the Line opening to a wider region",
+  "notes": "This arc is a guide. canon/series_state.json is the truth. Agent 12 Mode B regenerates this file at rollover.",
+  "episodes": [
+    {
+      "num": 1,
+      "title": "First Light, Second Opinion",
+      "primary_location": "Brassmouth — Docks of the Low Press",
+      "antagonist": "a dock foreman's Assay clerk (bureaucratic, not violent)",
+      "key_state_beats": ["TOAD first field deployment", "Second Opinion first fired", "Assay clerk logs an unlicensed artifact"],
+      "new_contraption": "TOAD (core, first deployment)",
+      "permission_asks_target": 9,
+      "assay_tier": "clerk"
+    },
+    {
+      "num": 2,
+      "title": "The Dent That Sings",
+      "primary_location": "Brassmouth — Slag Choir rail spur",
+      "antagonist": "a stray Echo of a dock winch",
+      "key_state_beats": ["first Echo encountered", "Assay license inquiry letter arrives"],
+      "new_contraption": "SNUFF (pocket soot-blower, 22 cm barrel)",
+      "permission_asks_target": 8,
+      "assay_tier": "inquiry"
+    },
+    {
+      "num": 3,
+      "title": "Glass and Gossip",
+      "primary_location": "The Slag Choir — tuning floor",
+      "antagonist": "a Choir foreman who sells Cog's name for credit",
+      "key_state_beats": ["PIP lens cracked permanently by falling slag plate", "Tev's debt to a Choir lender becomes an open thread"],
+      "new_contraption": "WRENCH-LASH (flexible brass grab line, 4 m)",
+      "permission_asks_target": 8,
+      "assay_tier": "inquiry"
+    },
+    {
+      "num": 4,
+      "title": "Inspector's Amber",
+      "primary_location": "Brassmouth — Assay licensing hall",
+      "antagonist": "the Assay Inspector (awareness crosses 0.5)",
+      "key_state_beats": ["official inspection of the party's gear", "Cog nearly passes by passing SNUFF off as 'household'"],
+      "new_contraption": "DOCKLIGHT (aether flare lantern, 31 cm)",
+      "permission_asks_target": 7,
+      "assay_tier": "inspector"
+    },
+    {
+      "num": 5,
+      "title": "What the Kettle Remembers",
+      "primary_location": "The Slag Choir — deep stacks",
+      "antagonist": "an Echo born from KETTLE's overuse (first self-made Echo)",
+      "key_state_beats": ["Cog kills the machine she made — first Echo cost lands", "Ilva names the Quiet Boiler liturgy for it"],
+      "new_contraption": "CINDER (palm thermal mortar, 18 cm)",
+      "permission_asks_target": 6,
+      "assay_tier": "inspector"
+    },
+    {
+      "num": 6,
+      "title": "Steam Ration",
+      "primary_location": "Brassmouth — the pressure quarter",
+      "antagonist": "a Tallyman scout (awareness approaches 0.75)",
+      "key_state_beats": ["KETTLE valve welds partway — permanent steam loss", "Rose makes every call this episode; command_fatigue climbs"],
+      "new_contraption": "HALO (single-person grapnel platform, 62 cm disc)",
+      "permission_asks_target": 6,
+      "assay_tier": "scout"
+    },
+    {
+      "num": 7,
+      "title": "Moth and Candle",
+      "primary_location": "Brassmouth — rooftops over the Assay",
+      "antagonist": "Tallyman squad, first full engagement",
+      "key_state_beats": ["HALO and MOTH combined rooftop fight", "Tev's debt collected violently — thread escalates"],
+      "new_contraption": "MOTH (hand-thrown aero scout, 28 cm wingspan)",
+      "permission_asks_target": 5,
+      "assay_tier": "squad"
+    },
+    {
+      "num": 8,
+      "title": "The Line Cuts Back",
+      "primary_location": "The Line — service span",
+      "antagonist": "the Assay's Tallyman squad, now hunting",
+      "key_state_beats": ["GRAPNEL cylinder lost saving Barrik from the span", "the Line revealed as a working rail to somewhere beyond"],
+      "new_contraption": "BOLT (rail-spike grappled driver, 45 cm)",
+      "permission_asks_target": 4,
+      "assay_tier": "squad"
+    },
+    {
+      "num": 9,
+      "title": "Nine Seconds of Order",
+      "primary_location": "The Line — the locked junction",
+      "antagonist": "a Tallyman squad lieutenant",
+      "key_state_beats": ["Cog's single earned binding order (if earned_command_moment conditions hold)", "BRACE hinge shears — permanent", "Rose lets it happen, then takes back command, visibly tired"],
+      "new_contraption": "CROWN (harness exo-frame, 94 cm tall over Cog)",
+      "permission_asks_target": 3,
+      "assay_tier": "squad"
+    },
+    {
+      "num": 10,
+      "title": "Branding Ground",
+      "primary_location": "Brassmouth — Assay branding yard",
+      "antagonist": "the Assay itself, personified as the Brandmaster (awareness crosses 0.9)",
+      "key_state_beats": ["branding attempt on Cog — outcome written by the brief, permanent in state either way", "Ilva's reliquary low; her restraint thread surfaces"],
+      "new_contraption": "VIGIL (self-raking soot shield, 70 cm fan)",
+      "permission_asks_target": 3,
+      "assay_tier": "branding"
+    },
+    {
+      "num": 11,
+      "title": "Quiet Boiler, Loud Line",
+      "primary_location": "The Line — the far yard",
+      "antagonist": "an Echo of the squad (machines the Assay overused in the hunt)",
+      "key_state_beats": ["Cog and Ilva reconcile the machine-soul cost", "Rose's command fatigue breaks into a quiet confession thread"],
+      "new_contraption": "ECHO-CHOKE (dampening collar for machine-intent, 24 cm)",
+      "permission_asks_target": 2,
+      "assay_tier": "branding"
+    },
+    {
+      "num": 12,
+      "title": "Second Opinion, Final Form",
+      "primary_location": "Brassmouth — the Low Press docks, full city backdrop",
+      "antagonist": "the Brandmaster and its full Tallyman line",
+      "key_state_beats": ["OVERCHARGE cylinder spent in the finale", "pistol silhouette visibly unlike EP01", "the Line's far gate opens — Season 2 region", "one core contraption's final permanent state set"],
+      "new_contraption": "TESTAMENT (one-shot overcharge chamber, 56 cm)",
+      "permission_asks_target": 2,
+      "assay_tier": "branding"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "season": 1,
+  "next_episode": 1,
+  "last_certified_episode": 0,
+  "total_runtime_sec": 0,
+  "season_rollover_required": false,
+  "cog": {
+    "permission_asks_target": 9,
+    "permission_asks_actual_last_ep": null,
+    "confidence_index": 0.0,
+    "soot_baseline": 0.0,
+    "injuries": [],
+    "unspoken_grievances": [],
+    "times_overruled_total": 0,
+    "times_overruled_and_right": 0,
+    "earned_command_moment_used": false
+  },
+  "pistol": {
+    "name": "Second Opinion",
+    "condition": 1.0,
+    "modifications": [],
+    "damage": [],
+    "cylinders_available": [
+      "SHOCK",
+      "SMOKE",
+      "GRAPNEL",
+      "OVERCHARGE"
+    ],
+    "cylinders_lost": [],
+    "reload_frames": 26,
+    "total_shots_fired": 0
+  },
+  "contraptions": [
+    {
+      "id": "TOAD",
+      "status": "intact",
+      "condition": 1.0,
+      "episodes_used": [],
+      "notes": ""
+    },
+    {
+      "id": "PIP",
+      "status": "intact",
+      "condition": 1.0,
+      "episodes_used": [],
+      "notes": ""
+    },
+    {
+      "id": "KETTLE",
+      "status": "intact",
+      "condition": 1.0,
+      "episodes_used": [],
+      "notes": ""
+    },
+    {
+      "id": "BRACE",
+      "status": "intact",
+      "condition": 1.0,
+      "episodes_used": [],
+      "notes": ""
+    }
+  ],
+  "contraptions_retired": [],
+  "party_state": [
+    {
+      "name": "Rose",
+      "alive": true,
+      "injuries": [],
+      "trust_in_cog": 0.5,
+      "command_fatigue": 0.0
+    },
+    {
+      "name": "Barrik",
+      "alive": true,
+      "injuries": [],
+      "trust_in_cog": 0.5,
+      "word_budget": 11
+    },
+    {
+      "name": "Tev",
+      "alive": true,
+      "injuries": [],
+      "trust_in_cog": 0.4,
+      "unpaid_debts": []
+    },
+    {
+      "name": "Ilva",
+      "alive": true,
+      "injuries": [],
+      "trust_in_cog": 0.7,
+      "reliquary_charges": 6
+    }
+  ],
+  "world_state": {
+    "assay_awareness_of_cog": 0.1,
+    "cog_licensed": false,
+    "cog_branded": false,
+    "echoes_created_total": 0,
+    "locations_visited": [],
+    "locations_destroyed": [],
+    "locations_unlocked": [
+      "Brassmouth"
+    ]
+  },
+  "assets": {
+    "sets_built": [],
+    "props_built": [],
+    "characters_built": [],
+    "shader_groups_built": [],
+    "library_blends": []
+  },
+  "open_threads": [],
+  "resolved_threads": [],
+  "promises_made_to_audience": [],
+  "budget": {
+    "gpu_minutes_used": 0,
+    "gpu_minutes_cap_per_episode": 900,
+    "max_consecutive_failures": 2
+  }
+}

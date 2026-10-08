@@ -1,0 +1,20 @@
+# Blender outputs (generated on the render box; state files in logs/ are the truth)
+output/**/*.blend
+output/**/*.mov
+output/**/*.mp4
+output/**/*.png
+output/**/frames/
+output/**/comp_frames/
+output/**/card_*.png
+output/**/tail_*.png
+output/**/render_settings.json
+
+# library blends are per-box artifacts
+library/*.blend
+
+# python
+__pycache__/
+*.pyc
+
+# OS noise
+.DS_Store

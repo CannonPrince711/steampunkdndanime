@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "fps": 24,
+  "episode_runtime_sec": 1320,
+  "total_frames": 31680,
+  "machine_done_file": "logs/EP##/machine_done.json",
+  "notes": "Shared step graph. The Python runner and the Claude Desktop chat loop both execute this exact order. EP## expands to the zero-padded episode number (EP01). Completion of a step = every file in 'write' exists and parses. Machine steps additionally require their id inside machine_done.json. Disk is truth: any step whose outputs exist is done, crashed or not.",
+  "steps_ep01": [
+    {
+      "id": "01_showrunner", "agent_file": "agents/01_showrunner.md", "agent_label": "AGENT 01 SHOWRUNNER",
+      "lane": "text",
+      "read": ["canon/series_canon.json", "canon/season_arc.json"],
+      "write": ["canon/episodes/EP##/brief.json"],
+      "notes": "EP01 only. Full brief in Agent 12 format. permission_asks_target 9. reuse_manifest empty."
+    },
+    {
+      "id": "02_screenwriter", "agent_file": "agents/02_screenwriter.md", "agent_label": "AGENT 02 SCREENWRITER",
+      "lane": "text",
+      "read": ["canon/series_state.json", "canon/season_arc.json", "canon/episodes/EP##/brief.json", "canon/voice_bible.md", "logs/episode_ledger.md"],
+      "write": ["canon/episodes/EP##/breakdown.json", "scripts/EP##/EP##.fountain"],
+      "notes": "1320 seconds exactly, frames cumulative. Ammo ledger per cylinder. carried_state_must_appear all placed."
+    },
+    {
+      "id": "09_dialogue_director", "agent_file": "agents/09_dialogue_director.md", "agent_label": "AGENT 09 DIALOGUE",
+      "lane": "text",
+      "read": ["canon/series_state.json", "canon/voice_bible.md", "canon/episodes/EP##/breakdown.json", "scripts/EP##/EP##.fountain"],
+      "write": ["scripts/EP##/EP##_dialogue_pass.fountain", "canon/episodes/EP##/lipsync.json"],
+      "notes": "Count permission asks; land within 1 of brief target. Barrik word budget hard cap."
+    },
+    {
+      "id": "08_fight_choreographer", "agent_file": "agents/08_fight_choreographer.md", "agent_label": "AGENT 08 CHOREO",
+      "lane": "text",
+      "read": ["canon/choreo_library.json", "canon/series_state.json", "canon/episodes/EP##/breakdown.json", "canon/episodes/EP##/lipsync.json"],
+      "write": ["canon/episodes/EP##/choreo.json", "scripts/EP##/EP##_fight_beats.md"],
+      "notes": "Library beats only. Soot persistence per scene. Reloads at state reload_frames between empty and fire."
+    },
+    {
+      "id": "03_plan", "agent_file": "agents/03_asset_builder.md", "agent_label": "AGENT 03 ASSETS (PLAN)",
+      "lane": "text",
+      "read": ["canon/series_canon.json", "canon/series_state.json", "canon/episodes/EP##/brief.json", "canon/episodes/EP##/breakdown.json"],
+      "write": ["logs/EP##/build_report.json"],
+      "notes": "Dimensions in cm, canon hexes only. Delta mode from EP02: reuse manifest honored, percent_reused reported."
+    },
+    {
+      "id": "10_plan", "agent_file": "agents/10_shader_tech.md", "agent_label": "AGENT 10 SHADERS (PLAN)",
+      "lane": "text",
+      "read": ["canon/series_canon.json", "canon/series_state.json", "logs/EP##/build_report.json", "canon/episodes/EP##/brief.json"],
+      "write": ["logs/EP##/shader_report.json"],
+      "notes": "Canon hexes and Kelvin only. SOOT property on every character and contraption. Max 3 hero shots."
+    },
+    {
+      "id": "04_plan", "agent_file": "agents/04_rig_lookdev.md", "agent_label": "AGENT 04 RIG LOOKDEV (PLAN)",
+      "lane": "text",
+      "read": ["canon/series_canon.json", "canon/series_state.json", "logs/EP##/build_report.json", "logs/EP##/shader_report.json"],
+      "write": ["logs/EP##/lookdev_report.json"],
+      "notes": "SOOT baseline from state. Pistol part swaps from state damage. Link mode from EP02: no re-rigs."
+    },
+    {
+      "id": "05_plan", "agent_file": "agents/05_animation_fx.md", "agent_label": "AGENT 05 ANIMATION (PLAN)",
+      "lane": "text",
+      "read": ["canon/series_state.json", "canon/episodes/EP##/breakdown.json", "canon/episodes/EP##/choreo.json", "canon/episodes/EP##/lipsync.json", "logs/EP##/lookdev_report.json"],
+      "write": ["logs/EP##/anim_report.json"],
+      "notes": "31,680 frames. Soot never un-lands. Camera grammar per lens. Money frames kept or logged."
+    },
+    {
+      "id": "M01_sets", "agent_file": "pipeline/build_sets.py", "agent_label": "MACHINE SETS",
+      "lane": "machine",
+      "machine_cmd": "bash pipeline/run_series.sh M01",
+      "read": ["logs/EP##/build_report.json", "canon/episodes/EP##/brief.json"],
+      "write": ["output/EP##/EP##_sets.blend"],
+      "notes": "Blender box. Delta links from library/ when the library exists. New assets written back to the library."
+    },
+    {
+      "id": "M02_shaders", "agent_file": "pipeline/shaders_steampunk.py", "agent_label": "MACHINE SHADERS",
+      "lane": "machine",
+      "machine_cmd": "bash pipeline/run_series.sh M02",
+      "read": ["logs/EP##/shader_report.json", "canon/series_canon.json"],
+      "write": [],
+      "notes": "Applies cel groups to EP##_sets.blend, updates library/LIB_shaders.blend, appends execution block to shader_report.json."
+    },
+    {
+      "id": "M03_lookdev", "agent_file": "pipeline/looklab.py", "agent_label": "MACHINE LOOKDEV",
+      "lane": "machine",
+      "machine_cmd": "bash pipeline/run_series.sh M03",
+      "read": ["logs/EP##/lookdev_report.json", "canon/series_state.json"],
+      "write": ["output/EP##/EP##_lookdev.blend"],
+      "notes": "Rigs, state damage, SOOT baselines, canon-temperature lights. Appends execution block to lookdev_report.json."
+    },
+    {
+      "id": "M04_anim", "agent_file": "pipeline/animate_fx.py", "agent_label": "MACHINE ANIMATION",
+      "lane": "machine",
+      "machine_cmd": "bash pipeline/run_series.sh M04",
+      "read": ["canon/episodes/EP##/choreo.json", "canon/episodes/EP##/lipsync.json", "canon/episodes/EP##/breakdown.json"],
+      "write": ["output/EP##/EP##_anim.blend"],
+      "notes": "Keys the 31,680 frames to choreo, lipsync, and camera grammar. Appends execution block to anim_report.json."
+    },
+    {
+      "id": "M05_render_comp_qa", "agent_file": "pipeline/render_farm.py", "agent_label": "MACHINE RENDER COMP QA",
+      "lane": "machine",
+      "machine_cmd": "bash pipeline/run_series.sh M05",
+      "read": ["output/EP##/EP##_anim.blend", "canon/episodes/EP##/breakdown.json"],
+      "write": ["output/EP##/EP##_master.mov", "output/EP##/EP##_proxy_720p.mp4", "output/EP##/EP##_contact_sheet.png", "logs/EP##/production_report.json"],
+      "notes": "Render farm with degrade ladder, comp stack, qa sweep. Never aborts for budget."
+    },
+    {
+      "id": "07_continuity_auditor", "agent_file": "agents/07_continuity_auditor.md", "agent_label": "AGENT 07 AUDITOR",
+      "lane": "text",
+      "read": ["canon/series_canon.json", "canon/series_state.json", "canon/episodes/EP##/brief.json", "canon/episodes/EP##/breakdown.json", "canon/episodes/EP##/choreo.json", "canon/episodes/EP##/lipsync.json", "scripts/EP##/EP##_dialogue_pass.fountain", "output/EP##/EP##_contact_sheet.png", "logs/EP##/production_report.json"],
+      "write": ["logs/EP##/continuity_report.md"],
+      "notes": "Measures, does not fix. File must end with the machine-readable VERDICT line. Cross-episode checks from EP02."
+    },
+    {
+      "id": "11_carrier", "agent_file": "agents/11_series_continuity_carrier.md", "agent_label": "AGENT 11 CARRIER",
+      "lane": "text",
+      "read": ["canon/series_state.json", "canon/episodes/EP##/brief.json", "canon/episodes/EP##/breakdown.json", "canon/episodes/EP##/choreo.json", "scripts/EP##/EP##_dialogue_pass.fountain", "logs/EP##/continuity_report.md", "logs/EP##/production_report.json"],
+      "write": ["logs/series_state_history/series_state_EP##_after.json"],
+      "notes": "The ONLY writer of series_state.json. Snapshot first, mutate, ledger row, advance pointer. Audit FAIL still ships: unresolved.md, best cut, state updates with the defect logged."
+    }
+  ],
+  "steps_ep02plus": {
+    "replaces": { "01_showrunner": {
+      "id": "12_season_architect", "agent_file": "agents/12_season_architect.md", "agent_label": "AGENT 12 ARCHITECT",
+      "lane": "text",
+      "read": ["canon/series_canon.json", "canon/series_state.json", "canon/season_arc.json", "logs/episode_ledger.md"],
+      "write": ["canon/episodes/EP##/brief.json"],
+      "notes": "MODE A. Everything caused by state. Ladders enforced. Reuse manifest at least 60 percent."
+    } }
+  },
+  "rollover_step": {
+    "id": "12_rollover", "agent_file": "agents/12_season_architect.md", "agent_label": "AGENT 12 ARCHITECT (MODE B)",
+    "lane": "text",
+    "read": ["canon/series_state.json", "canon/season_arc.json", "logs/episode_ledger.md", "canon/episodes/EP12/brief.json"],
+    "write": ["canon/season_arc.json"],
+    "notes": "MODE B. New 12-episode arc, permanent state preserved, new region, Cog's floor raised (S2 starts at 5 asks). Sets season_rollover_required false in state. Completion: season_arc.json season equals state season and flag is false."
+  }
+}
