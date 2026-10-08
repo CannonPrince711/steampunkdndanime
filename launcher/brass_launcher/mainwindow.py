@@ -174,6 +174,17 @@ class MainWindow(QMainWindow):
         self._build_ui()
         QTimer.singleShot(60, self.refresh)
 
+    def closeEvent(self, event):
+        # Stopping the window must stop the autopilot too — otherwise the
+        # loop keeps running headless and the next launch looks like it
+        # "opened up more".
+        if self.engine is not None and self.engine.isRunning():
+            self.engine.request_stop()
+            if not self.engine.wait(4000):
+                self.engine.terminate()
+                self.engine.wait(1000)
+        super().closeEvent(event)
+
     # ------------------------------------------------------------------- ui
     def _build_ui(self):
         central = QWidget()
@@ -313,7 +324,7 @@ class MainWindow(QMainWindow):
         h.setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
         h.setSectionResizeMode(2, QHeaderView.ResizeMode.Fixed)
         h.setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)
-        self.ledger.setColumnWidth(0, 44)
+        self.ledger.setColumnWidth(0, 52)
         self.ledger.setColumnWidth(1, 110)
         self.ledger.setColumnWidth(2, 44)
         self.ledger.setColumnWidth(3, 50)
