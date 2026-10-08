@@ -313,6 +313,134 @@ def cmd_status(_args) -> int:
     return 0
 
 
+def cmd_next_json(args) -> int:
+    order = load_run_order()
+    pos = position(order)
+    if pos["next_step"] is None:
+        print(json.dumps({"ok": True, "step": None, "position": pos["season"],
+                          "episode": pos["episode"], "pending_rollover": pos["pending_rollover"],
+                          "line": f"episode S{pos['season']:02d}E{pos['episode']:02d} complete"}))
+        return 0
+    rs = load_runner_state()
+    rs.update({
+        "current_season": pos["season"],
+        "current_episode": pos["episode"],
+        "current_step": pos["next_step"]["id"],
+        "awaiting": pos["next_step"]["lane"],
+        "started_at": rs.get("started_at", now()),
+    })
+    save_runner_state(rs)
+    print(json.dumps({"ok": True, "step": pos["next_step"],
+                      "season": pos["season"], "episode": pos["episode"],
+                      "tag": f"S{pos['season']:02d}E{pos['episode']:02d}",
+                      "pending_rollover": pos["pending_rollover"]}))
+    return EXIT_WAITING_CLAUDE if pos["next_step"]["lane"] == "text" else 0
+
+
+def cmd_done_json(args) -> int:
+    order = load_run_order()
+    pos = _done_position(order, args.step)
+    sid = args.step
+    steps = ([order["rollover_step"]] if pos["pending_rollover"]
+             else episode_steps(order, pos["season"], pos["episode"]))
+    match = [s for s in steps if s["id"] == sid]
+    if not match:
+        print(json.dumps({"ok": False, "errors": [
+            f"step {sid} is not part of S{pos['season']:02d}E{pos['episode']:02d}"],
+            "valid": [s["id"] for s in steps]}))
+        return 1
+    st = match[0]
+    if not step_complete(st, pos["season"], pos["episode"]):
+        missing = [expand(r, pos["episode"]) for r in st.get("write", [])
+                   if not _file_ok(p(expand(r, pos["episode"])))]
+        if st["lane"] == "machine" and sid not in _machine_done(pos["episode"]):
+            missing.append(f"{expand(order['machine_done_file'], pos['episode'])} missing '{sid}'")
+        if sid == "07_continuity_auditor" and verdict_of(pos["episode"]) is None:
+            missing.append("continuity_report.md lacks the VERDICT line")
+        if sid == "11_carrier":
+            snap = p("logs", "series_state_history", f"series_state_EP{pos['episode']:02d}_after.json")
+            if not _file_ok(snap):
+                missing.append(f"snapshot {os.path.relpath(snap, ROOT)} missing")
+            if load_state().get("last_certified_episode") != pos["episode"]:
+                missing.append("series_state.json last_certified_episode not advanced")
+        print(json.dumps({"ok": False, "errors": missing or ["checks failed"]}))
+        return 1
+    tag = f"S{pos['season']:02d}E{pos['episode']:02d}"
+    extra = ""
+    verdict = None
+    if sid == "07_continuity_auditor":
+        verdict = verdict_of(pos["episode"])
+        extra = f"verdict {verdict['verdict']} blocking={verdict['blocking']} nonblocking={verdict['nonblocking']}"
+    rs = load_runner_state()
+    done = rs.get("done_steps", {})
+    done.setdefault(f"{pos['season']:02d}:{pos['episode']:02d}", []).append(sid)
+    rs["done_steps"] = done
+    rs["current_step"] = None
+    rs["awaiting"] = None
+    save_runner_state(rs)
+    episode_complete = first_incomplete(order, pos["season"], pos["episode"]) is None
+    st2 = load_state()
+    certified_line = None
+    rollover_line = None
+    if episode_complete:
+        certified_line = status_line(tag, "EPISODE", "CERTIFIED",
+                                     _ep_summary(order, pos["season"], pos["episode"]))
+        if rollover_pending(st2) and st2.get("last_certified_episode") == 12:
+            rollover_line = (f"SEASON {pos['season']:02d} COMPLETE -> BEGINNING SEASON "
+                             f"{st2.get('season', pos['season'] + 1):02d} (AGENT 12 MODE B FIRST)")
+    nxt = position(order)
+    print(json.dumps({
+        "ok": True, "step": sid, "tag": tag, "episode_complete": episode_complete,
+        "certified_line": certified_line, "rollover_line": rollover_line,
+        "verdict": verdict,
+        "next": ({"step": nxt["next_step"], "season": nxt["season"], "episode": nxt["episode"],
+                  "tag": f"S{nxt['season']:02d}E{nxt['episode']:02d}"} if nxt["next_step"] else None),
+        "line": status_line(tag, st["agent_label"], "ok", extra),
+    }))
+    return EXIT_WAITING_CLAUDE if (nxt["next_step"] and nxt["next_step"]["lane"] == "text") else 0
+
+
+def cmd_status_json(_args) -> int:
+    order = load_run_order()
+    pos = position(order)
+    state = pos["state"]
+    season, ep = pos["season"], pos["episode"]
+    steps = episode_steps(order, season, ep) if not pos["pending_rollover"] else []
+    print(json.dumps({
+        "ok": True,
+        "tag": f"S{season:02d}E{ep:02d}",
+        "season": season, "episode": ep,
+        "pending_rollover": pos["pending_rollover"],
+        "last_certified": state.get("last_certified_episode", 0),
+        "total_runtime_sec": state.get("total_runtime_sec", 0),
+        "state_summary": {
+            "assay_awareness": state["world_state"]["assay_awareness_of_cog"],
+            "pistol_condition": state["pistol"]["condition"],
+            "pistol_shots": state["pistol"]["total_shots_fired"],
+            "pistol_cylinders": state["pistol"]["cylinders_available"],
+            "cog_asks_target": state["cog"]["permission_asks_target"],
+            "cog_asks_last": state["cog"].get("permission_asks_actual_last_ep"),
+            "cog_confidence": state["cog"]["confidence_index"],
+            "cog_soot": state["cog"]["soot_baseline"],
+            "open_threads": state["open_threads"],
+            "retired_contraptions": len(state["contraptions_retired"]),
+            "contraptions": [{ "id": c["id"], "condition": c["condition"], "status": c["status"]}
+                             for c in state.get("contraptions", [])],
+            "gpu_used": state["budget"]["gpu_minutes_used"],
+            "gpu_cap": state["budget"]["gpu_minutes_cap_per_episode"],
+        },
+        "steps": [{"id": s["id"], "label": s["agent_label"], "lane": s["lane"],
+                   "done": step_complete(s, season, ep)} for s in steps]
+                  + ([{"id": "12_rollover", "label": "AGENT 12 ARCHITECT (MODE B)",
+                       "lane": "text",
+                       "done": step_complete(order["rollover_step"], state.get("season", 1), 12)}]
+                     if pos["pending_rollover"] else []),
+        "next": ({"step": pos["next_step"], "tag": f"S{season:02d}E{ep:02d}"}
+                 if pos["next_step"] else None),
+    }, default=str))
+    return 0
+
+
 def cmd_next(args) -> int:
     order = load_run_order()
     pos = position(order)
@@ -335,17 +463,23 @@ def cmd_next(args) -> int:
 
 def _done_position(order: dict, sid: str) -> dict:
     """Episode context for a `done` call. runner_state wins when the requested
-    step belongs to that episode — essential for 11_carrier, because by the time
-    `done` runs, state has already advanced to the next episode."""
+    step belongs to that episode — essential for 11_carrier (state has already
+    advanced to the next episode) and for 12_rollover (the rollover work itself
+    clears season_rollover_required, so the flag can no longer identify it)."""
     rs = load_runner_state()
     state = load_state()
-    if rs.get("current_season") and rs.get("current_episode"):
+    rollover_id = order["rollover_step"]["id"]
+    pinned = (rs.get("current_season") and rs.get("current_episode"))
+    if (sid == rollover_id and state.get("last_certified_episode") == 12
+            and (not pinned or int(rs["current_episode"]) == 12)):
+        # state.season already advanced past the finished season
+        finished = (int(state.get("season", 2)) - 1
+                    if int(state.get("season", 2)) > 1 else 1)
+        return {"season": finished, "episode": 12, "pending_rollover": True,
+                "next_step": order["rollover_step"], "state": state}
+    if pinned:
         season, ep = int(rs["current_season"]), int(rs["current_episode"])
-        if (rollover_pending(state) and state.get("last_certified_episode") == 12
-                and ep == 12 and sid == "12_rollover"):
-            steps = [order["rollover_step"]]
-        else:
-            steps = episode_steps(order, season, ep)
+        steps = episode_steps(order, season, ep)
         if any(s["id"] == sid for s in steps):
             return {"season": season, "episode": ep, "pending_rollover": False,
                     "next_step": None, "state": state}
@@ -590,11 +724,14 @@ def cmd_driver(args) -> int:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="BRASS INITIATIVE series runner")
     sub = ap.add_subparsers(dest="cmd")
-    sub.add_parser("init")
-    sub.add_parser("status")
-    sub.add_parser("next")
+    sp = sub.add_parser("init")
+    sp_status = sub.add_parser("status")
+    sp_status.add_argument("--json", action="store_true", dest="as_json")
+    sp_next = sub.add_parser("next")
+    sp_next.add_argument("--json", action="store_true", dest="as_json")
     d = sub.add_parser("done")
     d.add_argument("--step", required=True)
+    d.add_argument("--json", action="store_true", dest="as_json")
     m = sub.add_parser("machine")
     m.add_argument("--wait", action="store_true")
     sub.add_parser("ep")
@@ -612,11 +749,11 @@ def main(argv=None) -> int:
     if args.cmd == "init":
         return cmd_init(args)
     if args.cmd == "status":
-        return cmd_status(args)
+        return cmd_status_json(args) if args.as_json else cmd_status(args)
     if args.cmd == "next":
-        return cmd_next(args)
+        return cmd_next_json(args) if args.as_json else cmd_next(args)
     if args.cmd == "done":
-        return cmd_done(args)
+        return cmd_done_json(args) if args.as_json else cmd_done(args)
     if args.cmd == "machine":
         return cmd_machine(args)
     if args.cmd == "ep":
