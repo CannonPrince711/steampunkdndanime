@@ -13,8 +13,9 @@ python3 -m venv .buildenv 2>/dev/null || true
 
 echo "[3/3] build"
 python3 make_icon.py
-./.buildenv/bin/pyinstaller --noconfirm --windowed --name "brass_initiative" \
+./.buildenv/bin/pyinstaller --noconfirm --onefile --windowed --name "brass_initiative" \
   --icon make_icon.ico --collect-all PySide6 brass_launcher.py
 
+[ -x dist/brass_initiative ] || { echo "BUILD FAILED — dist/brass_initiative missing"; exit 1; }
 echo
-echo "Done: dist/brass_initiative"
+echo "Done: dist/brass_initiative  (single file; place it inside the repo)"

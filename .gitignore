@@ -26,3 +26,7 @@ launcher/*.spec
 launcher/make_icon.ico
 launcher/make_icon.png
 launcher/settings.json
+
+# launcher runtime files
+Brass Initiative.exe
+settings.json

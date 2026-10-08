@@ -1,6 +1,7 @@
 """The control room: series state, pipeline, ledger, log, and the autopilot deck."""
 import json
 import os
+import sys
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
@@ -16,8 +17,16 @@ from . import theme
 from .engine import Engine
 from .runner_cli import RunnerCLI, RunnerError
 
-SETTINGS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                             "settings.json")
+
+def _app_dir():
+    """Where the app lives: the exe's folder when frozen (PyInstaller),
+    the launcher/ folder when run from source."""
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(os.path.abspath(sys.executable))
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+SETTINGS_PATH = os.path.join(_app_dir(), "settings.json")
 
 DEFAULTS = {
     "mode": "sim",
@@ -34,16 +43,29 @@ DEFAULTS = {
 
 
 def find_root():
+    """Locate the repo (the folder containing canon/series_state.json).
+    Checks BRASS_ROOT, then walks up from cwd and from the app's own folder —
+    so the exe works from the repo root, launcher/, or launcher/dist/."""
+    def walk_up(start, depth=8):
+        c = os.path.abspath(start)
+        for _ in range(depth):
+            if os.path.exists(os.path.join(c, "canon", "series_state.json")):
+                return c
+            parent = os.path.dirname(c)
+            if parent == c:
+                break
+            c = parent
+        return None
+
     cands = []
     if os.environ.get("BRASS_ROOT"):
         cands.append(os.environ["BRASS_ROOT"])
     cands.append(os.getcwd())
-    cands.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    if getattr(__import__("sys"), "frozen", False):
-        cands.append(os.path.dirname(__import__("sys").executable))
+    cands.append(_app_dir())
     for c in cands:
-        if os.path.exists(os.path.join(c, "canon", "series_state.json")):
-            return c
+        found = walk_up(c)
+        if found:
+            return found
     return cands[0]
 
 
