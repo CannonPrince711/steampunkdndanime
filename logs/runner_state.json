@@ -1,0 +1,10 @@
+{
+  "current_season": 1,
+  "current_episode": 1,
+  "current_step": null,
+  "awaiting": null,
+  "done_steps": {},
+  "notes": ["loop armed: say RUN to begin Season 1 Episode 1"],
+  "started_at": null,
+  "updated_at": "2026-10-08T00:00:00"
+}

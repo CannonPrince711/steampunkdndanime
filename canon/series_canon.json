@@ -1,0 +1,99 @@
+{
+  "series": {
+    "title": "BRASS INITIATIVE",
+    "genre": "steampunk D&D anime",
+    "episodes_per_season": 12,
+    "episode_runtime_sec": 1320,
+    "fps": 24,
+    "resolution": [1920, 1080],
+    "render_style": "cel_shaded_npr",
+    "engine_primary": "Blender EEVEE Next",
+    "engine_secondary": "Cycles for hero shots"
+  },
+  "protagonist": {
+    "name": "Elsie Brasswright",
+    "callsign": "Cog",
+    "age": 17,
+    "height_cm": 158,
+    "head_count": 6.5,
+    "class": "Artificer Gunsmith",
+    "party_rank": 4,
+    "is_party_leader": false,
+    "leadership_rule": "Cog never gives the final party order. She proposes, warns, invents, improvises, and executes. Rose decides.",
+    "hair_hex": "#E8E6E0",
+    "eye_hex": "#8A4FD6",
+    "costume": {
+      "blouse": "#F2EDE3",
+      "dress": "#1F7A74",
+      "harness": "#7A4A2B",
+      "belts": "#3E2718",
+      "brass": "#C9A227"
+    },
+    "want": "to be indispensable",
+    "need": "to accept she already is",
+    "flaw": "over-engineers under pressure and solves people problems with machines",
+    "speech_tic": "narrates tinkering in half-finished corrections"
+  },
+  "party": [
+    { "rank": 1, "name": "Rosalind Vahl", "nickname": "Rose", "class": "Oath-of-Steam Paladin", "leader": true, "height_cm": 172, "hair_hex": "#F2A7C3" },
+    { "rank": 2, "name": "Barrik Hollowhand", "class": "Fighter", "leader": false, "height_cm": 198 },
+    { "rank": 3, "name": "Teodor Kessel", "nickname": "Tev", "class": "Rogue Scout", "leader": false, "height_cm": 176 },
+    { "rank": 4, "name": "Elsie Brasswright", "nickname": "Cog", "class": "Artificer Gunsmith", "leader": false, "height_cm": 158 },
+    { "rank": 5, "name": "Sister Ilva Dann", "class": "Cleric of the Quiet Boiler", "leader": false, "height_cm": 165 }
+  ],
+  "weapon": {
+    "name": "Second Opinion",
+    "type": "break-action aether revolver",
+    "length_mm": 310,
+    "cylinders": [
+      { "id": "SHOCK", "color": "#4FC8E8", "rounds": 6 },
+      { "id": "SMOKE", "color": "#9A9A94", "rounds": 6 },
+      { "id": "GRAPNEL", "color": "#C9A227", "rounds": 1 },
+      { "id": "OVERCHARGE", "color": "#FFB33A", "rounds": 1 }
+    ],
+    "continuity_rule": "Ammo never increases without a visible reload."
+  },
+  "contraptions_core": ["TOAD", "PIP", "KETTLE", "BRACE"],
+  "world": {
+    "power": "Aether-steam",
+    "cost": "overused machines acquire intent and become Echoes",
+    "antagonist_body": "The Assay",
+    "locations_core": ["Brassmouth", "The Slag Choir", "The Line"]
+  },
+  "dnd_visual_grammar": {
+    "initiative_ring": "brass gear ring HUD, 2 second spin-up",
+    "d20_cutin": "smoked glass d20, nat20 amber crack, nat1 dull grey",
+    "advantage": "two ghosted motion trails",
+    "concentration": "thread of light that frays",
+    "damage": "soot accumulation, never blood",
+    "resource_tracking": "brass slot tokens on Cog's belt"
+  },
+  "palette": {
+    "brass_key": "#C9A227",
+    "brass_shadow": "#8A6B1F",
+    "teal_dress": "#1F7A74",
+    "teal_deep": "#10353A",
+    "leather_tan": "#7A4A2B",
+    "leather_dark": "#3E2718",
+    "linen_white": "#F2EDE3",
+    "violet_iris": "#8A4FD6",
+    "aether_amber": "#FFB33A",
+    "soot_black": "#1A1714",
+    "shock_blue": "#4FC8E8",
+    "rose_pink": "#F2A7C3"
+  },
+  "light_grammar_k": {
+    "gaslight": 2700,
+    "aether_amber": 1800,
+    "shock_blue": 7500,
+    "assay": 5600,
+    "dawn": 4200
+  },
+  "lens_grammar_mm": {
+    "world": 24,
+    "ensemble": 35,
+    "dialogue": 50,
+    "cog_alone": 85,
+    "pistol_raised": 135
+  }
+}
